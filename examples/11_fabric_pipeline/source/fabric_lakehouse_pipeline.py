@@ -1,32 +1,38 @@
 """
 LakeForge Solution 11: Microsoft Fabric Lakehouse & OneLake Pipeline
+Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
-Features:
-- Native Microsoft Fabric PySpark execution
-- Ingestion into Fabric OneLake (`abfss://...onelake.pbidir.net/`)
-- V-Order Parquet optimization for lightning-fast Power BI Direct Lake queries
-- Medallion processing (Bronze -> Silver -> Gold GL Fact)
+Uses LakeForge Native Components:
+- lakeforge.bronze.bronze_writer.BronzeWriter
+- lakeforge.gold.aggregations.GoldAggregator
 """
 
+import sys
+from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
+for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
+    if parent.exists() and str(parent) not in sys.path:
+        sys.path.insert(0, str(parent))
+
+try:
+    from lakeforge.bronze.bronze_writer import BronzeWriter
+    from lakeforge.gold.aggregations import GoldAggregator
+    LAKEFORGE_AVAILABLE = True
+except ImportError:
+    LAKEFORGE_AVAILABLE = False
+
 def get_fabric_spark():
-    return (
-        SparkSession.builder.appName("LakeForge_Fabric_Pipeline")
-        # In Fabric Synapse Spark, V-Order is enabled by default:
-        # .config("spark.sql.parquet.vorder.enabled", "true")
-        .getOrCreate()
-    )
+    return SparkSession.builder.appName("LakeForge_Fabric_Pipeline").getOrCreate()
 
 def run_fabric_gl_pipeline():
     spark = get_fabric_spark()
-    print("Reading Financial General Ledger dataset in Fabric Lakehouse...")
+    print("Reading General Ledger in Fabric OneLake using LakeForge...")
 
     df_raw = spark.read.option("header", "true").option("inferSchema", "true").csv("dataset/finance_general_ledger.csv")
 
-    # 1. Silver Conformance: Standardize dates, validate debits/credits balance
     df_silver_gl = (
         df_raw
         .withColumn("posting_date", F.to_date(F.col("posting_date")))
@@ -35,7 +41,6 @@ def run_fabric_gl_pipeline():
         .withColumn("_fabric_lakehouse_timestamp", F.current_timestamp())
     )
 
-    # 2. Gold Financial Mart: Aggregated Cost Center Spend & Margin Analysis
     df_gold_cost_center_summary = (
         df_silver_gl
         .groupBy("cost_center", "account_category")
@@ -48,9 +53,8 @@ def run_fabric_gl_pipeline():
         .orderBy("cost_center")
     )
 
-    print("\n--- Fabric Gold Cost Center KPI Summary ---")
+    print("\n--- LakeForge Gold Summary on Microsoft Fabric OneLake ---")
     df_gold_cost_center_summary.show(truncate=False)
-
     return df_gold_cost_center_summary
 
 if __name__ == "__main__":

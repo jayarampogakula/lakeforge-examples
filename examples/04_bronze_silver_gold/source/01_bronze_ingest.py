@@ -1,43 +1,53 @@
 """
 LakeForge Solution 04 - Step 1: Bronze Ingestion
+Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
-Bronze Principle:
-- 100% Raw, faithful representation of source payloads
-- Zero business transformations
-- Enriched with audit lineage columns (_ingest_timestamp, _source_file, _batch_id)
-- Append-only into Delta Lake
+Uses LakeForge Native Components:
+- lakeforge.bronze.bronze_writer.BronzeWriter
 """
 
 import sys
 import uuid
+from pathlib import Path
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
+
+for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
+    if parent.exists() and str(parent) not in sys.path:
+        sys.path.insert(0, str(parent))
+
+try:
+    from lakeforge.bronze.bronze_writer import BronzeWriter
+    LAKEFORGE_AVAILABLE = True
+except ImportError:
+    LAKEFORGE_AVAILABLE = False
 
 def run_bronze_ingestion():
     spark = SparkSession.builder.appName("LakeForge_Bronze_Ingest").getOrCreate()
     batch_id = str(uuid.uuid4())
 
-    print(f"Executing Bronze Ingestion [Batch ID: {batch_id}]...")
+    print(f"Executing LakeForge Bronze Ingestion [Batch ID: {batch_id}]...")
 
-    # Read raw JSON web orders
-    orders_path = "dataset/raw_web_orders.json"
-    df_raw_orders = spark.read.option("multiline", "false").json(orders_path)
+    df_raw = spark.read.option("multiline", "false").json("dataset/raw_web_orders.json")
 
-    # Attach Bronze Audit Lineage
-    df_bronze_orders = (
-        df_raw_orders
-        .withColumn("_ingest_timestamp", F.current_timestamp())
-        .withColumn("_source_file", F.input_file_name())
-        .withColumn("_batch_id", F.lit(batch_id))
-    )
+    # Use LakeForge BronzeWriter to inject audit metadata
+    if LAKEFORGE_AVAILABLE:
+        writer = BronzeWriter(spark)
+        df_bronze = writer.add_audit_columns(
+            df=df_raw,
+            add_hash_key=True,
+            add_ingestion_timestamp=True,
+            add_source_system=True,
+            source_system="WebOrders_JSON"
+        )
+    else:
+        from pyspark.sql import functions as F
+        df_bronze = df_raw.withColumn("_ingest_timestamp", F.current_timestamp())
 
-    # In production: write to delta table
-    # df_bronze_orders.write.format("delta").mode("append").saveAsTable("bronze.web_orders")
-    print("Bronze Layer Schema:")
-    df_bronze_orders.printSchema()
-    df_bronze_orders.show(3, truncate=False)
-    return df_bronze_orders
+    print("LakeForge Bronze Layer Schema:")
+    df_bronze.printSchema()
+    df_bronze.show(3, truncate=False)
+    return df_bronze
 
 if __name__ == "__main__":
     run_bronze_ingestion()

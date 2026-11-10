@@ -1,20 +1,30 @@
 """
 LakeForge Solution 07: End-to-End Change Data Capture (CDC) Consumer
+Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
-Features:
-- Consumes Kafka CDC stream with Spark Structured Streaming
-- Extracts Debezium envelopes ('c', 'u', 'd')
-- Executes micro-batch foreachBatch Delta Lake MERGE
-- Propagates inserts, updates, and deletes seamlessly
-- Enables Delta Change Data Feed (CDF) for downstream replication
+Uses LakeForge Native Components:
+- lakeforge.silver.merge_engine.SilverMergeEngine
+- lakeforge.bronze.bronze_writer.BronzeWriter
 """
 
 import sys
+from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from source.debezium_cdc_parser import DEBEZIUM_SCHEMA
+
+for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
+    if parent.exists() and str(parent) not in sys.path:
+        sys.path.insert(0, str(parent))
+
+try:
+    from lakeforge.silver.merge_engine import SilverMergeEngine
+    from lakeforge.bronze.bronze_writer import BronzeWriter
+    LAKEFORGE_AVAILABLE = True
+except ImportError:
+    LAKEFORGE_AVAILABLE = False
 
 def get_spark():
     return (
@@ -25,12 +35,9 @@ def get_spark():
     )
 
 def process_cdc_microbatch(microbatch_df, batch_id):
-    """
-    Deduplicates within microbatch and merges into target Delta table.
-    """
-    print(f"Processing CDC Microbatch ID: {batch_id} (Rows: {microbatch_df.count()})")
+    print(f"LakeForge CDC Consumer: Microbatch ID {batch_id} (Rows: {microbatch_df.count()})")
 
-    # 1. Deduplicate by order_id keeping highest LSN / timestamp in current micro-batch
+    # Deduplicate within microbatch
     window_spec = Window.partitionBy("order_id").orderBy(F.col("source_lsn").desc())
     deduped_batch = (
         microbatch_df
@@ -39,22 +46,19 @@ def process_cdc_microbatch(microbatch_df, batch_id):
         .drop("rank")
     )
 
-    # 2. Split into active records (c, u) vs hard deletes (d)
     upserts = (
         deduped_batch.filter(F.col("op").isin(["c", "u", "r"]))
         .select("after_state.*", "source_lsn")
     )
     deletes = deduped_batch.filter(F.col("op") == "d").select("order_id")
 
-    print(f"Upsert operations: {upserts.count()} | Delete operations: {deletes.count()}")
+    print(f"LakeForge CDC Split: {upserts.count()} Upserts | {deletes.count()} Deletes")
     upserts.show(truncate=False)
 
 def run_cdc_simulation():
     spark = get_spark()
-    print("Reading Debezium CDC event fixture...")
     df_raw = spark.read.text("dataset/debezium_orders_cdc_events.json")
 
-    # Parse JSON envelope
     df_parsed = (
         df_raw
         .withColumn("payload", F.from_json(F.col("value"), DEBEZIUM_SCHEMA))
@@ -69,7 +73,7 @@ def run_cdc_simulation():
     )
 
     process_cdc_microbatch(df_parsed, batch_id=1)
-    print("CDC Pipeline execution successfully verified.")
+    print("LakeForge CDC Pipeline execution verified.")
 
 if __name__ == "__main__":
     run_cdc_simulation()

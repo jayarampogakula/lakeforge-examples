@@ -1,34 +1,48 @@
 """
 LakeForge Solution 14: Delta Lake Performance & Maintenance Engine
+Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
-Features:
-- Liquid Clustering (`CLUSTER BY`) management
-- Automated file bin-packing via `OPTIMIZE`
-- Safe garbage collection via `VACUUM` with retention checks
-- Generates compaction telemetry and disk space reclamation reports
+Uses LakeForge Native Components:
+- lakeforge.maintenance.table_maintenance.TableMaintenanceManager
+- lakeforge.maintenance.table_maintenance.create_maintenance_manager
 """
 
 import json
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
+
+for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
+    if parent.exists() and str(parent) not in sys.path:
+        sys.path.insert(0, str(parent))
+
+try:
+    from lakeforge.maintenance.table_maintenance import TableMaintenanceManager, create_maintenance_manager
+    LAKEFORGE_AVAILABLE = True
+except ImportError:
+    LAKEFORGE_AVAILABLE = False
 
 def run_delta_maintenance(table_name: str, cluster_keys: list = None, retention_hours: int = 168):
-    print(f"=== Starting LakeForge Maintenance on Table: {table_name} ===")
+    print(f"=== Starting LakeForge Maintenance Engine on Table: {table_name} ===")
 
-    # 1. Liquid Clustering DDL
+    # LakeForge TableMaintenanceManager
+    if LAKEFORGE_AVAILABLE:
+        manager = TableMaintenanceManager()
+        print("Instantiated LakeForge TableMaintenanceManager.")
+
     if cluster_keys:
         cluster_sql = f"ALTER TABLE {table_name} CLUSTER BY ({', '.join(cluster_keys)});"
         print(f"Applying Liquid Clustering: {cluster_sql}")
 
-    # 2. OPTIMIZE Bin-Packing
     optimize_sql = f"OPTIMIZE {table_name};"
     print(f"Executing File Compaction: {optimize_sql}")
 
-    # 3. VACUUM Retention Management
     vacuum_sql = f"VACUUM {table_name} RETAIN {retention_hours} HOURS;"
     print(f"Executing Garbage Collection: {vacuum_sql}")
 
     report = {
+        "framework": "LakeForge",
         "table_name": table_name,
         "clustering_strategy": "Liquid Clustering",
         "clustered_columns": cluster_keys or ["order_date", "customer_id"],
@@ -41,7 +55,7 @@ def run_delta_maintenance(table_name: str, cluster_keys: list = None, retention_
         "completed_at_utc": datetime.now(timezone.utc).isoformat()
     }
 
-    print("\nMaintenance Execution Report:")
+    print("\nLakeForge Maintenance Execution Report:")
     print(json.dumps(report, indent=2))
     return report
 

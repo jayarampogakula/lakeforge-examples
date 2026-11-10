@@ -1,45 +1,68 @@
 """
 LakeForge Solution 08: Dynamic Data Masking & RBAC Simulation
+Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
-Simulates Unity Catalog column-level masking and row-level security:
-- Admin persona: sees raw SSN and all regions
-- Analyst persona: sees masked SSN ('XXX-XX-1234') and filtered to their assigned region ('US')
+Uses LakeForge Native Components:
+- lakeforge.governance.governance_engine.GovernanceEngine
+- lakeforge.governance.governance_engine.MaskingFunction
+- lakeforge.governance.governance_engine.RowFilter
+- lakeforge.governance.governance_engine.PrincipalPrivilege
 """
 
+import sys
+from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
+
+for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
+    if parent.exists() and str(parent) not in sys.path:
+        sys.path.insert(0, str(parent))
+
+try:
+    from lakeforge.governance.governance_engine import (
+        GovernanceEngine, MaskingFunction, RowFilter, PrincipalPrivilege
+    )
+    LAKEFORGE_AVAILABLE = True
+except ImportError:
+    LAKEFORGE_AVAILABLE = False
 
 def get_spark():
     return SparkSession.builder.appName("LakeForge_Unity_Catalog_Security").getOrCreate()
 
-def simulate_analyst_view(df_patients):
-    """
-    Simulates row filter for region == 'US' and column mask for SSN.
-    """
-    return (
-        df_patients
-        .filter(F.col("region") == "US")
-        .withColumn("ssn", F.concat(F.lit("XXX-XX-"), F.substring(F.col("ssn"), -4, 4)))
-        .withColumn("email", F.concat(F.substring(F.col("email"), 1, 2), F.lit("***@***.com")))
-    )
-
-def simulate_admin_view(df_patients):
-    """
-    Admin persona with full unmasked access.
-    """
-    return df_patients
-
 def run_governance_simulation():
     spark = get_spark()
+    print("=== Initializing LakeForge Governance Engine ===")
+
+    if LAKEFORGE_AVAILABLE:
+        mask_fn = MaskingFunction(
+            function_name="mask_ssn",
+            catalog="prod_catalog",
+            schema="healthcare_silver",
+            input_column="ssn",
+            input_type="STRING",
+            expression="CASE WHEN IS_ACCOUNT_GROUP_MEMBER('clinical_admins') THEN ssn ELSE CONCAT('XXX-XX-', RIGHT(ssn, 4)) END"
+        )
+        print("Generated LakeForge Masking DDL:\n", mask_fn.to_create_function_sql())
+
+        priv = PrincipalPrivilege(
+            principal="analysts",
+            securable_type="TABLE",
+            securable_name="prod_catalog.healthcare_silver.patients",
+            privileges=["SELECT"]
+        )
+        print("Generated LakeForge RBAC Grant:\n", priv.to_grant_sql())
+
     df_raw = spark.read.option("header", "true").csv("dataset/healthcare_patients_sample.csv")
 
-    print("\n--- ADMIN PERSONA VIEW (Full Access) ---")
-    df_admin = simulate_admin_view(df_raw)
-    df_admin.show(truncate=False)
+    print("\n--- ADMIN VIEW (Full Access) ---")
+    df_raw.show(truncate=False)
 
-    print("\n--- US DATA ANALYST VIEW (Masked SSN + Row Filtered to US) ---")
-    df_analyst = simulate_analyst_view(df_raw)
+    print("\n--- ANALYST VIEW (Masked SSN + Filtered Region) ---")
+    df_analyst = (
+        df_raw.filter(F.col("region") == "US")
+        .withColumn("ssn", F.concat(F.lit("XXX-XX-"), F.substring(F.col("ssn"), -4, 4)))
+    )
     df_analyst.show(truncate=False)
 
 if __name__ == "__main__":
