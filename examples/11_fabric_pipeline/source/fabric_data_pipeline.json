@@ -1,0 +1,35 @@
+{
+  "name": "pl_fabric_medallion_gl_pipeline",
+  "properties": {
+    "description": "Microsoft Fabric Data Factory pipeline orchestrating OneLake shortcut copy, Fabric Spark Notebook, and Direct Lake semantic model refresh.",
+    "activities": [
+      {
+        "name": "Copy_To_OneLake_Raw",
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource"
+          },
+          "sink": {
+            "type": "OneLakeTableSink",
+            "tableActionOption": "Append"
+          }
+        }
+      },
+      {
+        "name": "Run_Fabric_Spark_Notebook",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Copy_To_OneLake_Raw",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "notebookId": "fabric-nb-lakeforge-gl-processor",
+          "workspaceId": "ws-corporate-finance-prod"
+        }
+      }
+    ]
+  }
+}

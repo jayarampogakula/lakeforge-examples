@@ -1,0 +1,14 @@
+[
+  {
+    "card_id": "CARD-9912",
+    "window_start": "2026-11-01T10:00:00Z",
+    "window_end": "2026-11-01T10:10:00Z",
+    "txn_count": 4,
+    "total_spent": 5235.00,
+    "distinct_cities": ["New York", "Paris", "London"],
+    "fraud_score": 95,
+    "alert_reason": "High Velocity & Impossible Geographic Travel",
+    "status": "CARD_AUTO_LOCKED",
+    "action_dispatched": "SMS_SENT_TO_USER"
+  }
+]

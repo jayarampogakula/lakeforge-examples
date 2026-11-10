@@ -1,0 +1,21 @@
+{
+  "api": {
+    "base_url": "https://api.stripe.com/v1/charges",
+    "page_size": 50,
+    "max_retries": 5,
+    "backoff_factor": 1.5,
+    "rate_limit_per_sec": 10,
+    "timeout_sec": 30,
+    "secret_scope": "lakeforge-kv",
+    "api_token_secret": "stripe-api-token"
+  },
+  "target": {
+    "delta_table_path": "abfss://bronze@datalakeprod.dfs.core.windows.net/stripe/charges",
+    "table_name": "bronze.stripe_charges",
+    "merge_schema": true
+  },
+  "audit": {
+    "pipeline_name": "pl_stripe_charges_to_delta",
+    "source_entity": "Stripe_Charges_API"
+  }
+}

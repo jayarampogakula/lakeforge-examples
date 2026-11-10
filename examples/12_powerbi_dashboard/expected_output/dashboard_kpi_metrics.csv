@@ -1,0 +1,5 @@
+date,country,total_net_sales,total_cost,gross_profit,gross_margin_pct,active_customers
+2026-11-01,United States,1100.00,690.00,410.00,37.27%,1
+2026-11-01,Germany,900.00,550.00,350.00,38.89%,1
+2026-11-02,United States,1950.00,1200.00,750.00,38.46%,2
+TOTAL,All Regions,3950.00,2440.00,1510.00,38.23%,3

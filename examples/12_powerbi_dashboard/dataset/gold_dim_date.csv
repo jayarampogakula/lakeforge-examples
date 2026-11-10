@@ -1,0 +1,4 @@
+date_key,full_date,day_name,month_name,month_number,calendar_quarter,calendar_year,is_weekend
+20261101,2026-11-01,Sunday,November,11,Q4,2026,true
+20261102,2026-11-02,Monday,November,11,Q4,2026,false
+20261103,2026-11-03,Tuesday,November,11,Q4,2026,false

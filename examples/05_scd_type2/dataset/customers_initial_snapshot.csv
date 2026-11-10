@@ -1,0 +1,4 @@
+customer_id,customer_name,address,city,state,tier,effective_date
+CUST-1001,Johnathan Doe,123 Maple St,Seattle,WA,Silver,2026-01-01 00:00:00
+CUST-1002,Sarah Connor,456 Pine Ave,Los Angeles,CA,Gold,2026-01-01 00:00:00
+CUST-1003,Marcus Vance,789 Oak Rd,Austin,TX,Platinum,2026-01-01 00:00:00

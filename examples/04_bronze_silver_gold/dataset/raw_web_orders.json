@@ -1,0 +1,7 @@
+{"order_id": "ORD-101", "customer_id": "CUST-001", "order_timestamp": "2026-11-01T10:14:20Z", "total_amount": 250.00, "currency": "USD", "status": "COMPLETED"}
+{"order_id": "ORD-102", "customer_id": "CUST-002", "order_timestamp": "2026-11-01T11:05:00Z", "total_amount": 1400.50, "currency": "USD", "status": "COMPLETED"}
+{"order_id": "ORD-103", "customer_id": "CUST-001", "order_timestamp": "2026-11-01T15:30:10Z", "total_amount": 95.00, "currency": "USD", "status": "COMPLETED"}
+{"order_id": "ORD-104", "customer_id": "CUST-003", "order_timestamp": "2026-11-02T09:20:00Z", "total_amount": -50.00, "currency": "USD", "status": "FAILED"}
+{"order_id": "ORD-105", "customer_id": null, "order_timestamp": "2026-11-02T10:00:00Z", "total_amount": 500.00, "currency": "USD", "status": "PENDING"}
+{"order_id": "ORD-101", "customer_id": "CUST-001", "order_timestamp": "2026-11-01T10:15:00Z", "total_amount": 250.00, "currency": "USD", "status": "COMPLETED"}
+{"order_id": "ORD-106", "customer_id": "CUST-002", "order_timestamp": "2026-11-02T14:15:30Z", "total_amount": 820.00, "currency": "USD", "status": "COMPLETED"}

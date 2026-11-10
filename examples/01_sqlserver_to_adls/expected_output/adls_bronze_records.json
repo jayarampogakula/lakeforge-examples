@@ -1,0 +1,30 @@
+[
+  {
+    "OrderID": 100001,
+    "CustomerID": "CUST-9012",
+    "OrderDate": "2026-11-01",
+    "OrderAmount": 1250.00,
+    "Currency": "USD",
+    "OrderStatus": "COMPLETED",
+    "Region": "North America",
+    "LastModifiedDateTime": "2026-11-01 10:15:30",
+    "_ingest_timestamp": "2026-11-10T08:50:00.123Z",
+    "_batch_id": "c7a8b411-9a7e-40cb-a521-12fec90011bb",
+    "_source_system": "SQLServer_OLTP",
+    "_pipeline_name": "pl_sqlserver_orders_to_bronze"
+  },
+  {
+    "OrderID": 100002,
+    "CustomerID": "CUST-4411",
+    "OrderDate": "2026-11-01",
+    "OrderAmount": 480.50,
+    "Currency": "USD",
+    "OrderStatus": "SHIPPED",
+    "Region": "Europe",
+    "LastModifiedDateTime": "2026-11-01 11:20:00",
+    "_ingest_timestamp": "2026-11-10T08:50:00.123Z",
+    "_batch_id": "c7a8b411-9a7e-40cb-a521-12fec90011bb",
+    "_source_system": "SQLServer_OLTP",
+    "_pipeline_name": "pl_sqlserver_orders_to_bronze"
+  }
+]

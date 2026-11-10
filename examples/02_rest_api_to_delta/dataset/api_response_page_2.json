@@ -1,0 +1,32 @@
+{
+  "object": "list",
+  "has_more": false,
+  "data": [
+    {
+      "id": "ch_3MtwxL2eZvKYlo2C1e0z",
+      "object": "charge",
+      "amount": 7500,
+      "amount_captured": 7500,
+      "amount_refunded": 0,
+      "currency": "eur",
+      "customer": "cus_N018243",
+      "status": "succeeded",
+      "paid": true,
+      "disputed": false,
+      "created": 1704074400,
+      "billing_details": {
+        "city": "Berlin",
+        "country": "DE",
+        "postal_code": "10115"
+      },
+      "payment_method_details": {
+        "type": "card",
+        "card": {
+          "brand": "visa",
+          "funding": "credit",
+          "last4": "1111"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+// ==============================================================================
+// LakeForge Production DAX Measures for Enterprise Direct Lake Models
+// Author: Jayaram Pogakula (https://github.com/jayarampogakula)
+// ==============================================================================
+
+// 1. Total Net Sales Revenue
+Total Net Sales = 
+SUM(fact_sales[net_sales_amount])
+
+// 2. Total Cost of Goods Sold (COGS)
+Total Cost = 
+SUM(fact_sales[cost_amount])
+
+// 3. Gross Margin & Margin Percentage
+Gross Profit = 
+[Total Net Sales] - [Total Cost]
+
+Gross Margin % = 
+DIVIDE([Gross Profit], [Total Net Sales], 0)
+
+// 4. Month-To-Date (MTD) Net Sales
+Sales MTD = 
+TOTALMTD([Total Net Sales], dim_date[full_date])
+
+// 5. Year-Over-Year (YoY) Sales Comparison & Growth %
+Sales Prior Year = 
+CALCULATE(
+    [Total Net Sales],
+    SAMEPERIODLASTYEAR(dim_date[full_date])
+)
+
+YoY Sales Growth % = 
+VAR CurrentSales = [Total Net Sales]
+VAR PriorSales = [Sales Prior Year]
+RETURN
+    IF(
+        ISBLANK(PriorSales) || PriorSales == 0,
+        BLANK(),
+        DIVIDE(CurrentSales - PriorSales, PriorSales, 0)
+    )
+
+// 6. Rolling 7-Day Average Sales
+Rolling 7D Avg Sales = 
+AVERAGEX(
+    DATESINPERIOD(dim_date[full_date], LASTDATE(dim_date[full_date]), -7, DAY),
+    [Total Net Sales]
+)
+
+// 7. Active Transacting Customers
+Active Customers = 
+DISTINCTCOUNT(fact_sales[customer_key])

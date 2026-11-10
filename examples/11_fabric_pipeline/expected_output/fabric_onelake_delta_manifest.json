@@ -1,0 +1,11 @@
+{
+  "workspace_name": "ws-corporate-finance-prod",
+  "lakehouse_name": "FinanceLakehouse",
+  "onelake_path": "https://onelake.dfs.fabric.microsoft.com/ws-corporate-finance-prod/FinanceLakehouse.Lakehouse/Tables/gold_cost_center_summary",
+  "storage_format": "delta_parquet",
+  "v_order_enabled": true,
+  "shortcut_target": "None (Native Managed Table)",
+  "direct_lake_eligible": true,
+  "total_records": 4,
+  "created_at_utc": "2026-11-10T09:02:00Z"
+}

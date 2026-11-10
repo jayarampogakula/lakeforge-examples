@@ -1,0 +1,26 @@
+[
+  {
+    "dataset": "iot_silver",
+    "name": "valid_device_id",
+    "passed_records": 5,
+    "failed_records": 1,
+    "action": "DROP",
+    "timestamp": "2026-11-01T10:35:00Z"
+  },
+  {
+    "dataset": "iot_silver",
+    "name": "valid_temperature_range",
+    "passed_records": 4,
+    "failed_records": 1,
+    "action": "DROP",
+    "timestamp": "2026-11-01T10:35:00Z"
+  },
+  {
+    "dataset": "iot_silver",
+    "name": "valid_battery_level",
+    "passed_records": 3,
+    "failed_records": 1,
+    "action": "TRACK_ONLY",
+    "timestamp": "2026-11-01T10:35:00Z"
+  }
+]

@@ -1,0 +1,11 @@
+PipelineID,SourceSystem,SourceSchema,SourceTable,TargetContainer,TargetDirectory,WatermarkColumn,LastWatermarkValue,ExecutionCadence,BatchGroup,IsActive
+1,SQLServer_Sales,Sales,Orders,bronze,sales/orders,ModifiedDate,2026-11-01 00:00:00,DAILY,1,1
+2,SQLServer_Sales,Sales,OrderDetails,bronze,sales/order_details,ModifiedDate,2026-11-01 00:00:00,DAILY,1,1
+3,SQLServer_Sales,Sales,Customers,bronze,sales/customers,ModifiedDate,2026-11-01 00:00:00,DAILY,1,1
+4,SQLServer_Sales,Production,Products,bronze,production/products,LastUpdate,2026-11-01 00:00:00,DAILY,1,1
+5,SQLServer_Sales,Production,Inventory,bronze,production/inventory,Timestamp,2026-11-01 00:00:00,HOURLY,1,1
+6,Oracle_HR,HumanResources,Employees,bronze,hr/employees,UpdateTimestamp,2026-10-15 00:00:00,WEEKLY,2,1
+7,Oracle_HR,HumanResources,Departments,bronze,hr/departments,NULL,NULL,WEEKLY,2,1
+8,Postgres_Billing,Billing,Invoices,bronze,billing/invoices,InvoiceDate,2026-11-01 00:00:00,DAILY,1,1
+9,Postgres_Billing,Billing,Payments,bronze,billing/payments,PaymentDate,2026-11-01 00:00:00,DAILY,1,1
+10,MongoDB_Logs,Application,AuditTrail,bronze,logs/audit_trail,createdAt,2026-11-01 00:00:00,HOURLY,1,1

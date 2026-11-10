@@ -1,0 +1,24 @@
+{
+  "dax_query": "EVALUATE SUMMARIZECOLUMNS(dim_date[calendar_year], dim_customer[country], 'Measures'[Total Net Sales], 'Measures'[Gross Margin %], 'Measures'[Active Customers])",
+  "execution_engine": "DirectLake_VertiPaq",
+  "transcoding_time_ms": 0,
+  "query_duration_ms": 4.12,
+  "fallback_to_directquery": false,
+  "rows_returned": 2,
+  "results": [
+    {
+      "dim_date.calendar_year": 2026,
+      "dim_customer.country": "United States",
+      "Total Net Sales": 3050.00,
+      "Gross Margin %": 0.3803,
+      "Active Customers": 2
+    },
+    {
+      "dim_date.calendar_year": 2026,
+      "dim_customer.country": "Germany",
+      "Total Net Sales": 900.00,
+      "Gross Margin %": 0.3889,
+      "Active Customers": 1
+    }
+  ]
+}

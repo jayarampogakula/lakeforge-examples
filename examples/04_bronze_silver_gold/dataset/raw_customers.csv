@@ -1,0 +1,4 @@
+customer_id,customer_name,tier,country,signup_date
+CUST-001,Acme Corp,Enterprise,United States,2024-01-15
+CUST-002,Global Logistics,Mid-Market,Germany,2024-03-22
+CUST-003,Vertex Labs,Startup,Canada,2025-06-10

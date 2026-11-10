@@ -1,0 +1,6 @@
+surrogate_key,customer_id,customer_name,address,city,state,tier,valid_from,valid_to,is_current
+sk_1001_v1,CUST-1001,Johnathan Doe,123 Maple St,Seattle,WA,Silver,2026-01-01 00:00:00,2026-11-05 10:00:00,N
+sk_1001_v2,CUST-1001,Johnathan Doe,777 Broadway,New York,NY,Gold,2026-11-05 10:00:00,9999-12-31 00:00:00,Y
+sk_1002_v1,CUST-1002,Sarah Connor,456 Pine Ave,Los Angeles,CA,Gold,2026-01-01 00:00:00,9999-12-31 00:00:00,Y
+sk_1003_v1,CUST-1003,Marcus Vance,789 Oak Rd,Austin,TX,Platinum,2026-01-01 00:00:00,9999-12-31 00:00:00,Y
+sk_1004_v1,CUST-1004,Elena Rostova,500 Michigan Ave,Chicago,IL,Silver,2026-11-05 10:00:00,9999-12-31 00:00:00,Y

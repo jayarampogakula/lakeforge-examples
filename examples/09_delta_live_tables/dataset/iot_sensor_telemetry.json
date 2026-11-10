@@ -1,0 +1,6 @@
+{"device_id": "DEV-01", "timestamp": "2026-11-01T10:00:00Z", "temperature": 22.4, "humidity": 45.0, "battery": 95.0}
+{"device_id": "DEV-01", "timestamp": "2026-11-01T10:15:00Z", "temperature": 23.1, "humidity": 44.5, "battery": 94.0}
+{"device_id": "DEV-02", "timestamp": "2026-11-01T10:05:00Z", "temperature": 18.5, "humidity": 52.0, "battery": 88.0}
+{"device_id": null, "timestamp": "2026-11-01T10:10:00Z", "temperature": 20.0, "humidity": 50.0, "battery": 80.0}
+{"device_id": "DEV-02", "timestamp": "2026-11-01T10:20:00Z", "temperature": 999.9, "humidity": 51.0, "battery": 87.0}
+{"device_id": "DEV-01", "timestamp": "2026-11-01T10:30:00Z", "temperature": 24.0, "humidity": 43.8, "battery": 8.5}

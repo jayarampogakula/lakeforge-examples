@@ -1,0 +1,7 @@
+order_id,customer_id,customer_email,order_amount,order_status
+ORD-7001,C-101,alex@enterprise.com,450.00,COMPLETED
+ORD-7002,C-102,bad-email-format,1200.00,COMPLETED
+ORD-7003,null,sarah@logistics.com,89.50,COMPLETED
+ORD-7004,C-104,david@cloud.com,-250.00,SHIPPED
+ORD-7005,C-105,elena@retail.com,3400.00,INVALID_STATUS
+ORD-7006,C-106,marcus@finance.com,750.00,COMPLETED

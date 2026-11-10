@@ -1,0 +1,16 @@
+[
+  {
+    "order_id": "ORD-104",
+    "customer_id": "CUST-003",
+    "total_amount": -50.00,
+    "quarantine_reason": "Invalid Total Amount <= 0",
+    "_quarantined_at": "2026-11-10T08:54:00.000Z"
+  },
+  {
+    "order_id": "ORD-105",
+    "customer_id": null,
+    "total_amount": 500.00,
+    "quarantine_reason": "Missing CustomerID",
+    "_quarantined_at": "2026-11-10T08:54:00.000Z"
+  }
+]

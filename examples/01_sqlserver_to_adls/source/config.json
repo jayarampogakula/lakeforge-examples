@@ -1,0 +1,24 @@
+{
+  "source": {
+    "jdbc_url": "jdbc:sqlserver://sqlserver-prod.database.windows.net:1433;database=EnterpriseSales",
+    "table_name": "Sales.Orders",
+    "partition_column": "OrderID",
+    "lower_bound": 100001,
+    "upper_bound": 100050,
+    "num_partitions": 4,
+    "fetch_size": 10000,
+    "secret_scope": "lakeforge-kv",
+    "username_secret": "sqlserver-user",
+    "password_secret": "sqlserver-password"
+  },
+  "target": {
+    "adls_path": "abfss://bronze@datalakeprod.dfs.core.windows.net/sales/orders",
+    "format": "delta",
+    "save_mode": "append",
+    "partition_by": ["OrderDate"]
+  },
+  "audit": {
+    "pipeline_name": "pl_sqlserver_orders_to_bronze",
+    "environment": "production"
+  }
+}

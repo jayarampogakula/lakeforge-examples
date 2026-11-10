@@ -1,0 +1,15 @@
+{
+  "table_name": "gold.fact_sales",
+  "clustering_strategy": "Liquid Clustering",
+  "clustered_columns": [
+    "order_date",
+    "customer_key"
+  ],
+  "pre_optimization_files": 1540,
+  "post_optimization_files": 12,
+  "small_files_coalesced": 1528,
+  "storage_reclaimed_gb": 184.5,
+  "average_query_speedup": "9.4x faster",
+  "retention_period_hours": 168,
+  "completed_at_utc": "2026-11-10T09:05:00Z"
+}

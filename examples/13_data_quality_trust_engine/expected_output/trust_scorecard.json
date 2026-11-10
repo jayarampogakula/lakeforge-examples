@@ -1,0 +1,18 @@
+{
+  "entity_name": "bronze.sales_orders",
+  "batch_id": "dq-batch-20261110-0905",
+  "total_records_evaluated": 6,
+  "passed_records": 2,
+  "quarantined_records": 4,
+  "trust_score_pct": 33.33,
+  "sla_threshold_pct": 95.00,
+  "circuit_breaker_triggered": true,
+  "rule_breakdown": {
+    "null_check_order_id": {"passed": 6, "failed": 0},
+    "null_check_customer_id": {"passed": 5, "failed": 1},
+    "valid_amount": {"passed": 5, "failed": 1},
+    "valid_email": {"passed": 5, "failed": 1},
+    "valid_status": {"passed": 5, "failed": 1}
+  },
+  "action_taken": "Quarantine table updated & PagerDuty alert dispatched"
+}

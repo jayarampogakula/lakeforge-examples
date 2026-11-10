@@ -1,0 +1,6 @@
+patient_id,full_name,ssn,email,diagnosis,region,billing_amount
+PT-1001,Alice Johnson,987-65-4321,alice.j@example.com,Type 2 Diabetes,US,4500.00
+PT-1002,Bob Williams,876-54-3210,bob.w@example.com,Hypertension,EU,1200.50
+PT-1003,Charlie Brown,765-43-2109,charlie.b@example.com,Asthma,US,850.00
+PT-1004,David Miller,654-32-1098,david.m@example.com,Cardiac Arrhythmia,APAC,9200.00
+PT-1005,Eva Schmidt,543-21-0987,eva.s@example.com,Migraine,EU,640.00

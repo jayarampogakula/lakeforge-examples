@@ -1,0 +1,7 @@
+transaction_id,account_number,account_category,cost_center,entry_type,amount_usd,posting_date,description
+GL-1001,400100,REVENUE,CC-SALES-US,CREDIT,15000.00,2026-11-01,Enterprise Software License
+GL-1002,500200,EXPENSE,CC-ENG-CLOUD,DEBIT,3200.50,2026-11-01,Azure Cloud Infrastructure
+GL-1003,500300,EXPENSE,CC-MARKETING,DEBIT,4500.00,2026-11-01,Q4 Advertising Campaign
+GL-1004,400100,REVENUE,CC-SALES-EU,CREDIT,22000.00,2026-11-02,Consulting Implementation
+GL-1005,500200,EXPENSE,CC-ENG-CLOUD,DEBIT,2800.00,2026-11-02,Databricks Compute Usage
+GL-1006,500100,EXPENSE,CC-SALES-US,DEBIT,1200.00,2026-11-02,Sales Team Travel & Expenses

@@ -1,0 +1,30 @@
+{
+  "name": "dlt_lakeforge_iot_pipeline",
+  "storage": "abfss://dlt@datalakeprod.dfs.core.windows.net/iot_pipeline",
+  "configuration": {
+    "lakeforge.environment": "production",
+    "pipelines.enableIdentityColumn": "true"
+  },
+  "clusters": [
+    {
+      "label": "default",
+      "autoscale": {
+        "min_workers": 1,
+        "max_workers": 5,
+        "mode": "ENHANCED"
+      }
+    }
+  ],
+  "libraries": [
+    {
+      "notebook": {
+        "path": "/Shared/LakeForge/dlt_pipeline_notebook"
+      }
+    }
+  ],
+  "target": "iot_gold",
+  "continuous": false,
+  "development": false,
+  "edition": "ADVANCED",
+  "channel": "CURRENT"
+}

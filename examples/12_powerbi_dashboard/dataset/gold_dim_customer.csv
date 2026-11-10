@@ -1,0 +1,4 @@
+customer_key,customer_id,customer_name,customer_tier,city,country
+CUST-SK-01,C-1001,Apex Enterprises,Enterprise,New York,United States
+CUST-SK-02,C-1002,Bavaria Logistics,Mid-Market,Munich,Germany
+CUST-SK-03,C-1003,Cascade Retail,Small Business,Seattle,United States

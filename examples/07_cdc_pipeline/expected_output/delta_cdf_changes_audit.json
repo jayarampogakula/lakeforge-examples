@@ -1,0 +1,29 @@
+[
+  {
+    "order_id": "ORD-901",
+    "customer_id": "CUST-10",
+    "order_amount": 350.0,
+    "order_status": "COMPLETED",
+    "_change_type": "update_postimage",
+    "_commit_version": 4,
+    "_commit_timestamp": "2026-11-10T08:58:00.000Z"
+  },
+  {
+    "order_id": "ORD-903",
+    "customer_id": "CUST-45",
+    "order_amount": 80.0,
+    "order_status": "CANCELLED",
+    "_change_type": "delete",
+    "_commit_version": 4,
+    "_commit_timestamp": "2026-11-10T08:58:00.000Z"
+  },
+  {
+    "order_id": "ORD-904",
+    "customer_id": "CUST-33",
+    "order_amount": 640.0,
+    "order_status": "COMPLETED",
+    "_change_type": "insert",
+    "_commit_version": 4,
+    "_commit_timestamp": "2026-11-10T08:58:00.000Z"
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "object": "list",
+  "has_more": true,
+  "data": [
+    {
+      "id": "ch_3MtwxL2eZvKYlo2C1e0x",
+      "object": "charge",
+      "amount": 1099,
+      "amount_captured": 1099,
+      "amount_refunded": 0,
+      "currency": "usd",
+      "customer": "cus_N018241",
+      "status": "succeeded",
+      "paid": true,
+      "created": 1704067200,
+      "billing_details": {
+        "city": "Austin",
+        "country": "US",
+        "postal_code": "78701"
+      },
+      "payment_method_details": {
+        "type": "card",
+        "card": {
+          "brand": "visa",
+          "funding": "credit",
+          "last4": "4242"
+        }
+      }
+    },
+    {
+      "id": "ch_3MtwxL2eZvKYlo2C1e0y",
+      "object": "charge",
+      "amount": 25000,
+      "amount_captured": 25000,
+      "amount_refunded": 0,
+      "currency": "usd",
+      "customer": "cus_N018242",
+      "status": "succeeded",
+      "paid": true,
+      "created": 1704070800,
+      "billing_details": {
+        "city": "London",
+        "country": "GB",
+        "postal_code": "EC1A 1BB"
+      },
+      "payment_method_details": {
+        "type": "card",
+        "card": {
+          "brand": "mastercard",
+          "funding": "debit",
+          "last4": "5555"
+        }
+      }
+    }
+  ]
+}

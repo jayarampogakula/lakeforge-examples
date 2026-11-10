@@ -1,0 +1,4 @@
+customer_id,customer_name,address,city,state,tier,effective_date
+CUST-1001,Johnathan Doe,777 Broadway,New York,NY,Gold,2026-11-05 10:00:00
+CUST-1002,Sarah Connor,456 Pine Ave,Los Angeles,CA,Gold,2026-11-05 10:00:00
+CUST-1004,Elena Rostova,500 Michigan Ave,Chicago,IL,Silver,2026-11-05 10:00:00

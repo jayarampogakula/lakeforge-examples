@@ -1,0 +1,72 @@
+{
+  "name": "pl_lakeforge_metadata_orchestrator",
+  "properties": {
+    "description": "Master metadata-driven pipeline that looks up active tables from ControlTable and iterates via ForEach to trigger Databricks jobs dynamically.",
+    "parameters": {
+      "BatchGroup": {
+        "type": "int",
+        "defaultValue": 1
+      },
+      "Environment": {
+        "type": "string",
+        "defaultValue": "prod"
+      }
+    },
+    "activities": [
+      {
+        "name": "Lookup_Active_Tables",
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "SqlSource",
+            "sqlReaderQuery": "SELECT PipelineID, SourceSystem, SourceSchema, SourceTable, TargetContainer, TargetDirectory, WatermarkColumn, LastWatermarkValue FROM etl.ControlTable WHERE IsActive = 1 AND BatchGroup = @{pipeline().parameters.BatchGroup}"
+          },
+          "dataset": {
+            "referenceName": "ds_sql_control_table",
+            "type": "DatasetReference"
+          },
+          "firstRowOnly": false
+        }
+      },
+      {
+        "name": "ForEach_Dynamic_Ingestion",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "Lookup_Active_Tables",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 20,
+          "items": {
+            "value": "@activity('Lookup_Active_Tables').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Trigger_Databricks_Worker",
+              "type": "DatabricksNotebook",
+              "typeProperties": {
+                "notebookPath": "/Shared/LakeForge/lakeforge_dynamic_worker",
+                "baseParameters": {
+                  "pipeline_id": "@{item().PipelineID}",
+                  "source_table": "@{item().SourceSchema}.@{item().SourceTable}",
+                  "target_path": "@{item().TargetContainer}/@{item().TargetDirectory}",
+                  "watermark_col": "@{item().WatermarkColumn}",
+                  "last_watermark": "@{item().LastWatermarkValue}",
+                  "adf_run_id": "@{pipeline().RunId}"
+                }
+              },
+              "linkedServiceName": {
+                "referenceName": "ls_databricks_prod",
+                "type": "LinkedServiceReference"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

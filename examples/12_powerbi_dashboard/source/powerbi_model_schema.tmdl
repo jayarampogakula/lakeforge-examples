@@ -1,0 +1,43 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+relationship 'Rel_FactSales_DimDate'
+	fromColumn: fact_sales.date_key
+	toColumn: dim_date.date_key
+
+relationship 'Rel_FactSales_DimCustomer'
+	fromColumn: fact_sales.customer_key
+	toColumn: dim_customer.customer_key
+
+table dim_date
+	lineageTag: a7e891c2-31d0-4089-980e-3108d120a112
+	column date_key
+		dataType: int64
+		isKey
+		sourceColumn: date_key
+	column full_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		sourceColumn: full_date
+	column calendar_year
+		dataType: int64
+		sourceColumn: calendar_year
+
+table fact_sales
+	lineageTag: b8f192d3-41e1-4190-891f-4219e130b223
+	column sales_order_id
+		dataType: string
+		sourceColumn: sales_order_id
+	column net_sales_amount
+		dataType: decimal
+		formatString: \$#,##0.00
+		sourceColumn: net_sales_amount
+	column cost_amount
+		dataType: decimal
+		formatString: \$#,##0.00
+		sourceColumn: cost_amount

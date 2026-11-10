@@ -1,0 +1,12 @@
+{
+  "table": "gold.fact_sales",
+  "status": "FRAGMENTED",
+  "total_file_count": 1540,
+  "average_file_size_mb": 0.45,
+  "total_storage_size_gb": 192.8,
+  "symptoms": [
+    "Small file problem caused by 10-second streaming micro-batches",
+    "Slow metadata query parsing on driver node",
+    "High storage API listing costs on cloud storage provider"
+  ]
+}

@@ -1,0 +1,5 @@
+order_id,customer_id,customer_email,order_amount,order_status,violation_reason
+ORD-7002,C-102,bad-email-format,1200.00,COMPLETED,Failed valid_email regex
+ORD-7003,null,sarah@logistics.com,89.50,COMPLETED,Failed null_check_customer_id
+ORD-7004,C-104,david@cloud.com,-250.00,SHIPPED,Failed valid_amount (<= 0)
+ORD-7005,C-105,elena@retail.com,3400.00,INVALID_STATUS,Failed valid_status enum

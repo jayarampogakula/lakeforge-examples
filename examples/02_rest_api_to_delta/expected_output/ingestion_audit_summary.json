@@ -1,0 +1,18 @@
+{
+  "pipeline": "pl_stripe_charges_to_delta",
+  "batch_id": "b8f0412a-3901-4476-b63e-10fa8892cc01",
+  "pages_scanned": 2,
+  "total_records_ingested": 3,
+  "corrupted_records_quarantined": 0,
+  "schema_changes_detected": [
+    "Added column: disputed (BooleanType)"
+  ],
+  "api_status_distribution": {
+    "HTTP_200": 2,
+    "HTTP_429": 0,
+    "HTTP_500": 0
+  },
+  "delta_target_table": "bronze.stripe_charges",
+  "execution_duration_sec": 1.84,
+  "status": "SUCCESS"
+}

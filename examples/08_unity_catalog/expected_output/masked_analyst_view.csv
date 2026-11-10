@@ -1,0 +1,3 @@
+patient_id,full_name,ssn,email,diagnosis,region,billing_amount
+PT-1001,Alice Johnson,XXX-XX-4321,al***@***.com,Type 2 Diabetes,US,4500.00
+PT-1003,Charlie Brown,XXX-XX-2109,ch***@***.com,Asthma,US,850.00

@@ -1,0 +1,18 @@
+[
+  {
+    "table_identifier": "sales.orders",
+    "batch_id": "b11a-initial-load-4902",
+    "high_watermark": "2026-11-01 14:15:00",
+    "rows_processed": 3,
+    "committed_at_utc": "2026-11-01T15:00:00Z",
+    "status": "COMMITTED"
+  },
+  {
+    "table_identifier": "sales.orders",
+    "batch_id": "c88f-day2-incremental-7124",
+    "high_watermark": "2026-11-02 10:45:00",
+    "rows_processed": 2,
+    "committed_at_utc": "2026-11-02T11:00:00Z",
+    "status": "COMMITTED"
+  }
+]

@@ -1,0 +1,4 @@
+order_date,country,tier,total_orders,total_revenue,avg_order_value
+2026-11-01,United States,Enterprise,2,345.00,172.50
+2026-11-01,Germany,Mid-Market,1,1400.50,1400.50
+2026-11-02,Germany,Mid-Market,1,820.00,820.00
