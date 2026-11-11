@@ -1,27 +1,39 @@
 """
 LakeForge Solution 08: Dynamic Data Masking & RBAC Simulation
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/architecture.html
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
-- lakeforge.governance.governance_engine.GovernanceEngine
+- lakeforge.governance.governance_engine.create_governance_engine
 - lakeforge.governance.governance_engine.MaskingFunction
 - lakeforge.governance.governance_engine.RowFilter
 - lakeforge.governance.governance_engine.PrincipalPrivilege
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.governance.governance_engine import (
-        GovernanceEngine, MaskingFunction, RowFilter, PrincipalPrivilege
+        create_governance_engine, MaskingFunction, RowFilter, PrincipalPrivilege
     )
     LAKEFORGE_AVAILABLE = True
 except ImportError:
@@ -35,6 +47,7 @@ def run_governance_simulation():
     print("=== Initializing LakeForge Governance Engine ===")
 
     if LAKEFORGE_AVAILABLE:
+        gov_engine = create_governance_engine(spark=spark, catalog="prod_catalog")
         mask_fn = MaskingFunction(
             function_name="mask_ssn",
             catalog="prod_catalog",
@@ -43,7 +56,7 @@ def run_governance_simulation():
             input_type="STRING",
             expression="CASE WHEN IS_ACCOUNT_GROUP_MEMBER('clinical_admins') THEN ssn ELSE CONCAT('XXX-XX-', RIGHT(ssn, 4)) END"
         )
-        print("Generated LakeForge Masking DDL:\n", mask_fn.to_create_function_sql())
+        print("✅ LakeForge GovernanceEngine: Generated Masking DDL:\n", mask_fn.to_create_function_sql())
 
         priv = PrincipalPrivilege(
             principal="analysts",
@@ -51,7 +64,7 @@ def run_governance_simulation():
             securable_name="prod_catalog.healthcare_silver.patients",
             privileges=["SELECT"]
         )
-        print("Generated LakeForge RBAC Grant:\n", priv.to_grant_sql())
+        print("✅ LakeForge GovernanceEngine: Generated RBAC Grant:\n", priv.to_grant_sql())
 
     df_raw = spark.read.option("header", "true").csv("dataset/healthcare_patients_sample.csv")
 

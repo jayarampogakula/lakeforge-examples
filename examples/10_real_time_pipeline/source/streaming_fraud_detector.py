@@ -1,27 +1,39 @@
 """
 LakeForge Solution 10: Sub-Second Real-Time Streaming & Fraud Detection
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/ingestion/kafka.html
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
 - lakeforge.ingestion.streaming.kafka_loader.KafkaLoader
-- lakeforge.trust_engine.trust_engine.TrustEngine
-- lakeforge.bronze.bronze_writer.BronzeWriter
+- lakeforge.trust_engine.trust_engine.create_trust_engine
+- lakeforge.bronze.bronze_writer.create_bronze_writer
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.ingestion.streaming.kafka_loader import KafkaLoader
-    from lakeforge.trust_engine.trust_engine import TrustEngine
+    from lakeforge.trust_engine.trust_engine import create_trust_engine
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -39,7 +51,7 @@ def run_fraud_detector_simulation():
     spark = SparkSession.builder.appName("LakeForge_RealTime_Fraud_Detector").getOrCreate()
 
     if LAKEFORGE_AVAILABLE:
-        print("LakeForge KafkaLoader & TrustEngine: Initialized streaming session.")
+        print("✅ LakeForge KafkaLoader & TrustEngine: Initialized real-time streaming pipeline.")
 
     df_raw = spark.read.schema(TXN_SCHEMA).json("dataset/streaming_transactions_stream.json")
     df_stream = (

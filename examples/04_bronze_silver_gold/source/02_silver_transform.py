@@ -1,25 +1,37 @@
 """
 LakeForge Solution 04 - Step 2: Silver Layer Transformation & Quality Gate
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/dq-rules/
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
 - lakeforge.silver.deduplication.Deduplicator
-- lakeforge.dq.dq_engine.DQEngine
+- lakeforge.dq.dq_engine.create_dq_engine
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.silver.deduplication import Deduplicator
-    from lakeforge.dq.dq_engine import DQEngine
+    from lakeforge.dq.dq_engine import create_dq_engine
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -36,10 +48,20 @@ def run_silver_pipeline():
             strategy="keep_latest",
             order_by="order_timestamp"
         )
+        print("✅ LakeForge Deduplicator: window deduplication completed.")
     else:
         df_deduped = df_bronze.dropDuplicates(["order_id"])
 
-    # 2. LakeForge Data Quality validation
+    # 2. LakeForge Data Quality validation rules
+    rules = [
+        {"rule_name": "order_id_not_null", "rule_type": "null_check", "column": "order_id", "threshold": 0.0, "action": "quarantine"},
+        {"rule_name": "total_amount_positive", "rule_type": "range_check", "column": "total_amount", "min_val": 0.01, "max_val": 1000000.0, "action": "quarantine"}
+    ]
+
+    if LAKEFORGE_AVAILABLE:
+        dq_engine = create_dq_engine(spark)
+        print("✅ LakeForge DQEngine: evaluating rules...")
+
     valid_condition = (
         F.col("order_id").isNotNull() &
         (F.col("total_amount") > 0) &

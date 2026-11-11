@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/jayarampogakula/Lakeforge"><img src="https://img.shields.io/badge/Framework-LakeForge-blue.svg?style=for-the-badge" alt="LakeForge"></a>
+  <a href="https://jayarampogakula.github.io/lakeforge"><img src="https://img.shields.io/badge/Docs-Official%20Documentation-blueviolet.svg?style=for-the-badge&logo=googledocs" alt="Official Docs"></a>
   <a href="https://youtube.com/@jayarampogakula"><img src="https://img.shields.io/badge/YouTube-Video%20Walkthroughs-red.svg?style=for-the-badge&logo=youtube" alt="YouTube Channel"></a>
   <a href="https://github.com/jayarampogakula/lakeforge-examples/stargazers"><img src="https://img.shields.io/github/stars/jayarampogakula/lakeforge-examples?style=for-the-badge&color=gold" alt="GitHub Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License"></a>
@@ -22,6 +23,8 @@
 > Data teams don't want another theoretical library—they need end-to-end, battle-tested blueprints that solve real enterprise data challenges: high-throughput database replication, metadata control frameworks, zero-downtime SCD Type 2 dimensions, sub-second streaming analytics, and unified governance.
 >
 > This repository contains **14 complete, end-to-end production solutions** implemented with the **[LakeForge Framework](https://github.com/jayarampogakula/Lakeforge)**.
+>
+> 📖 **Official Framework Documentation**: [https://jayarampogakula.github.io/lakeforge](https://jayarampogakula.github.io/lakeforge)
 
 ---
 

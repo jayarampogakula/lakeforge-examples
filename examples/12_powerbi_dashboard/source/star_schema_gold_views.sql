@@ -1,4 +1,10 @@
+-- ==============================================================================
 -- LakeForge Star Schema Gold Layer for Power BI Direct Lake
+-- Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+-- Documentation: https://jayarampogakula.github.io/lakeforge/docs/MODULE_GUIDE.html
+-- Author: Jayaram Pogakula (https://github.com/jayarampogakula)
+-- ==============================================================================
+
 CREATE SCHEMA IF NOT EXISTS gold;
 USE gold;
 

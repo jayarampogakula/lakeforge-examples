@@ -1,11 +1,13 @@
 """
 LakeForge Solution 03: Generic Dynamic Databricks Worker Notebook
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/getting-started/Implementation_guide.html#6-json-config
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
+- lakeforge.metadata.config_parser.ConfigParser
 - lakeforge.utilities.dynamic_runner.DynamicRunner
-- lakeforge.bronze.bronze_writer.BronzeWriter
+- lakeforge.bronze.bronze_writer.create_bronze_writer
 """
 
 import json
@@ -17,14 +19,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 from pyspark.sql import SparkSession
 
-# Ensure LakeForge is accessible
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
+    from lakeforge.metadata.config_parser import ConfigParser
     from lakeforge.utilities.dynamic_runner import DynamicRunner
-    from lakeforge.bronze.bronze_writer import BronzeWriter
+    from lakeforge.bronze.bronze_writer import create_bronze_writer
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -61,12 +73,12 @@ def run_worker():
     logger.info("Executing LakeForge Dynamic Worker for Table: %s (PipelineID: %s)",
                 params["source_table"], params["pipeline_id"])
 
-    # LakeForge DynamicRunner pattern
     if LAKEFORGE_AVAILABLE:
-        logger.info("LakeForge DynamicRunner validated: ready for dynamic transformation dispatch.")
+        logger.info("✅ LakeForge ConfigParser & DynamicRunner loaded: ready for runtime orchestration.")
 
     status = {
         "framework": "LakeForge",
+        "doc_url": "https://jayarampogakula.github.io/lakeforge/docs/getting-started/Implementation_guide.html",
         "pipeline_id": params["pipeline_id"],
         "status": "SUCCESS",
         "rows_processed": 1420,

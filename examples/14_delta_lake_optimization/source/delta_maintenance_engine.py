@@ -1,24 +1,36 @@
 """
 LakeForge Solution 14: Delta Lake Performance & Maintenance Engine
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/MODULE_GUIDE.html#maintenance
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
-- lakeforge.maintenance.table_maintenance.TableMaintenanceManager
 - lakeforge.maintenance.table_maintenance.create_maintenance_manager
+- lakeforge.maintenance.table_maintenance.TableMaintenanceManager
 """
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
-    from lakeforge.maintenance.table_maintenance import TableMaintenanceManager, create_maintenance_manager
+    from lakeforge.maintenance.table_maintenance import create_maintenance_manager, TableMaintenanceManager
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -28,8 +40,8 @@ def run_delta_maintenance(table_name: str, cluster_keys: list = None, retention_
 
     # LakeForge TableMaintenanceManager
     if LAKEFORGE_AVAILABLE:
-        manager = TableMaintenanceManager()
-        print("Instantiated LakeForge TableMaintenanceManager.")
+        manager = create_maintenance_manager()
+        print("✅ LakeForge TableMaintenanceManager initialized via factory.")
 
     if cluster_keys:
         cluster_sql = f"ALTER TABLE {table_name} CLUSTER BY ({', '.join(cluster_keys)});"
@@ -43,6 +55,7 @@ def run_delta_maintenance(table_name: str, cluster_keys: list = None, retention_
 
     report = {
         "framework": "LakeForge",
+        "doc_url": "https://jayarampogakula.github.io/lakeforge/docs/MODULE_GUIDE.html",
         "table_name": table_name,
         "clustering_strategy": "Liquid Clustering",
         "clustered_columns": cluster_keys or ["order_date", "customer_id"],

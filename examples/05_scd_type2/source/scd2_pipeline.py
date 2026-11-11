@@ -1,23 +1,35 @@
 """
 LakeForge Solution 05: Automated Slowly Changing Dimensions (SCD Type 2) Engine
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/getting-started/Implementation_guide.html#5-scd-type-2
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
-- lakeforge.silver.scd_type2.SCDType2Handler
+- lakeforge.silver.scd_type2.create_scd_type2_handler
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
-    from lakeforge.silver.scd_type2 import SCDType2Handler
+    from lakeforge.silver.scd_type2 import create_scd_type2_handler
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -34,16 +46,10 @@ def run_scd2_simulation():
     spark = get_spark()
     tracked_cols = ["address", "city", "state", "tier"]
 
-    # 1. Initialize LakeForge SCDType2Handler
+    # 1. Initialize LakeForge SCD Type 2 Handler
     if LAKEFORGE_AVAILABLE:
-        scd_handler = SCDType2Handler(
-            spark=spark,
-            effective_date_col="valid_from",
-            end_date_col="valid_to",
-            current_flag_col="is_current",
-            hash_col="_attr_hash"
-        )
-        print("Instantiated LakeForge SCDType2Handler.")
+        scd_handler = create_scd_type2_handler(spark)
+        print("✅ LakeForge SCDType2Handler initialized via create_scd_type2_handler.")
 
     # 2. Read Day 1 Baseline Snapshot
     df_day1 = spark.read.option("header", "true").csv("dataset/customers_initial_snapshot.csv")

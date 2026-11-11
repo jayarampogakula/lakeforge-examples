@@ -1,13 +1,15 @@
 """
 LakeForge Solution 07: End-to-End Change Data Capture (CDC) Consumer
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/ingestion/kafka.html
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
 - lakeforge.silver.merge_engine.SilverMergeEngine
-- lakeforge.bronze.bronze_writer.BronzeWriter
+- lakeforge.bronze.bronze_writer.create_bronze_writer
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
@@ -15,13 +17,23 @@ from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from source.debezium_cdc_parser import DEBEZIUM_SCHEMA
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.silver.merge_engine import SilverMergeEngine
-    from lakeforge.bronze.bronze_writer import BronzeWriter
+    from lakeforge.bronze.bronze_writer import create_bronze_writer
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False

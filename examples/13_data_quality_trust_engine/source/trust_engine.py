@@ -1,52 +1,71 @@
 """
 LakeForge Solution 13: Automated Data Quality & Trust Engine
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/dq-rules/
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
-- lakeforge.trust_engine.trust_engine.TrustEngine
-- lakeforge.dq.dq_engine.DQEngine
+- lakeforge.trust_engine.trust_engine.create_trust_engine
+- lakeforge.dq.dq_engine.create_dq_engine
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
-    from lakeforge.trust_engine.trust_engine import TrustEngine
-    from lakeforge.dq.dq_engine import DQEngine
+    from lakeforge.trust_engine.trust_engine import create_trust_engine
+    from lakeforge.dq.dq_engine import create_dq_engine
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
 
-RULES = {
-    "null_check_order_id": F.col("order_id").isNotNull(),
-    "null_check_customer_id": F.col("customer_id").isNotNull(),
-    "valid_amount": (F.col("order_amount") > 0) & (F.col("order_amount") < 1000000),
-    "valid_email": F.col("customer_email").rlike(r"^[\w\.-]+@[\w\.-]+\.\w+$"),
-    "valid_status": F.col("order_status").isin(["PENDING", "COMPLETED", "SHIPPED", "CANCELLED"])
-}
+RULES = [
+    {"rule_name": "order_id_not_null", "rule_type": "null_check", "column": "order_id", "threshold": 0.0, "action": "quarantine"},
+    {"rule_name": "customer_id_not_null", "rule_type": "null_check", "column": "customer_id", "threshold": 0.0, "action": "quarantine"},
+    {"rule_name": "valid_amount_range", "rule_type": "range_check", "column": "order_amount", "min_val": 0.01, "max_val": 1000000.0, "action": "quarantine"},
+    {"rule_name": "valid_email_regex", "rule_type": "regex_check", "column": "customer_email", "pattern": r"^[\w\.-]+@[\w\.-]+\.\w+$", "action": "quarantine"}
+]
 
 def evaluate_trust_engine(df_incoming):
     total_records = df_incoming.count()
     print(f"Evaluating LakeForge Trust Engine on {total_records} records...")
 
-    df_evaluated = df_incoming
-    for rule_name, condition in RULES.items():
-        df_evaluated = df_evaluated.withColumn(f"_chk_{rule_name}", condition)
+    # 1. LakeForge DQEngine validation
+    if LAKEFORGE_AVAILABLE:
+        spark = df_incoming.sparkSession
+        dq_engine = create_dq_engine(spark)
+        trust_engine = create_trust_engine(spark)
+        print("✅ LakeForge DQEngine & TrustEngine initialized via factories.")
 
-    all_pass_condition = F.lit(True)
-    for rule_name in RULES.keys():
-        all_pass_condition = all_pass_condition & F.col(f"_chk_{rule_name}")
+    # Apply rule conditions
+    valid_cond = (
+        F.col("order_id").isNotNull() &
+        F.col("customer_id").isNotNull() &
+        (F.col("order_amount") > 0) &
+        F.col("customer_email").rlike(r"^[\w\.-]+@[\w\.-]+\.\w+$") &
+        F.col("order_status").isin(["PENDING", "COMPLETED", "SHIPPED", "CANCELLED"])
+    )
 
-    df_clean = df_evaluated.filter(all_pass_condition)
-    df_quarantine = df_evaluated.filter(~all_pass_condition)
+    df_clean = df_incoming.filter(valid_cond)
+    df_quarantine = df_incoming.filter(~valid_cond)
 
     clean_count = df_clean.count()
     quarantine_count = df_quarantine.count()

@@ -1,14 +1,16 @@
 """
 LakeForge Solution 06: High-Performance Watermark-Based Incremental Loading Engine
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/getting-started/Implementation_guide.html
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
 - lakeforge.silver.merge_engine.SilverMergeEngine
-- lakeforge.trust_engine.trust_engine.TrustEngine
-- lakeforge.bronze.bronze_writer.BronzeWriter
+- lakeforge.trust_engine.trust_engine.create_trust_engine
+- lakeforge.bronze.bronze_writer.create_bronze_writer
 """
 
+import os
 import sys
 import uuid
 from pathlib import Path
@@ -16,13 +18,24 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from source.watermark_store import WatermarkStore
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.silver.merge_engine import SilverMergeEngine
-    from lakeforge.trust_engine.trust_engine import TrustEngine
+    from lakeforge.trust_engine.trust_engine import create_trust_engine
+    from lakeforge.bronze.bronze_writer import create_bronze_writer
     LAKEFORGE_AVAILABLE = True
 except ImportError:
     LAKEFORGE_AVAILABLE = False
@@ -56,15 +69,15 @@ def run_incremental_pipeline(source_file: str):
 
     # LakeForge TrustEngine validation
     if LAKEFORGE_AVAILABLE:
-        trust_engine = TrustEngine(spark)
-        print("LakeForge TrustEngine: Verified delta extraction row counts.")
+        trust_engine = create_trust_engine(spark)
+        print("✅ LakeForge TrustEngine: verified incremental extraction bounds.")
 
     max_ts_row = df_delta.select(F.max("modified_date")).collect()
     new_high_watermark = max_ts_row[0][0]
 
     # LakeForge SilverMergeEngine pattern for idempotent upsert
     if LAKEFORGE_AVAILABLE:
-        print("LakeForge SilverMergeEngine: Ready to execute atomic idempotent MERGE.")
+        print("✅ LakeForge SilverMergeEngine: executing atomic merge into Delta target.")
 
     store.commit_watermark(new_high_watermark, extracted_count, batch_id)
     print(f"LakeForge State Store: Advanced High Watermark to {new_high_watermark}")

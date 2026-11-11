@@ -1,20 +1,32 @@
 """
 LakeForge Solution 04 - Step 3: Gold Layer Aggregations & Dimensional Marts
-Framework: LakeForge (https://github.com/jayarampogakula/Lakeforge)
+Framework: LakeForge (https://jayarampogakula.github.io/lakeforge)
+Documentation: https://jayarampogakula.github.io/lakeforge/docs/MODULE_GUIDE.html#5-gold-layer-package-lakeforgegold
 Author: Jayaram Pogakula (https://github.com/jayarampogakula)
 
 Uses LakeForge Native Components:
 - lakeforge.gold.aggregations.GoldAggregator
 """
 
+import os
 import sys
 from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-for parent in [Path(__file__).resolve().parents[3] / "Lakeforge", Path("..") / "Lakeforge"]:
-    if parent.exists() and str(parent) not in sys.path:
-        sys.path.insert(0, str(parent))
+def resolve_repo_paths():
+    candidates = [
+        "/Workspace/Lakeforge",
+        str(Path(__file__).resolve().parents[3] / "Lakeforge"),
+        str(Path.cwd().parent / "Lakeforge"),
+        "Lakeforge"
+    ]
+    for p in candidates:
+        if os.path.isdir(p) and p not in sys.path:
+            sys.path.insert(0, p)
+            break
+
+resolve_repo_paths()
 
 try:
     from lakeforge.gold.aggregations import GoldAggregator
@@ -40,7 +52,7 @@ def run_gold_pipeline():
         .select("order_id", "customer_id", "customer_name", "tier", "country", "order_date", "total_amount")
     )
 
-    # LakeForge GoldAggregator dynamic aggregation
+    # LakeForge GoldAggregator
     if LAKEFORGE_AVAILABLE:
         gold_config = {
             "source_tables": {"fact_sales": "gold.fact_sales"},
@@ -56,6 +68,7 @@ def run_gold_pipeline():
             source_dfs={"fact_sales": df_gold_fact_sales},
             config=gold_config
         ).orderBy("order_date", "country")
+        print("✅ LakeForge GoldAggregator: aggregated dimensional mart computed.")
     else:
         df_gold_kpi = (
             df_gold_fact_sales
